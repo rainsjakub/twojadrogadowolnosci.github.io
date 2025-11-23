@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+
+<title>Twoja Droga do Wolności</title>
+<link rel="icon" href="ikona.png">
+<style>
+:root{
+  --bg:#eef6ff;
+  --card:#fff;
+  --text:#0f172a;
+  --accent1:linear-gradient(135deg,#4f46e5,#7c3aed);
+  --accent2:linear-gradient(135deg,#fb923c,#f97316);
+  --accent3:linear-gradient(135deg,#10b981,#06b6d4);
+  --accent4:linear-gradient(135deg,#f472b6,#8b5cf6);
+}
+body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;background:var(--bg);color:var(--text)}
+.container{max-width:1200px;margin:28px auto;padding:20px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:20px}
+.brand h1{margin:0;font-size:34px}
+.brand p{margin:6px 0 0;color:var(--text);opacity:.7}
+.btn{padding:10px 14px;border-radius:10px;border:none;cursor:pointer;font-weight:600;background:transparent}
+.primary{background:var(--accent1);color:white;box-shadow:0 8px 30px rgba(124,58,237,0.18);}
+.card-row{display:flex;gap:18px;margin:20px 0}
+.stat{flex:1;padding:18px;border-radius:14px;color:white;min-height:90px;display:flex;flex-direction:column;justify-content:center;gap:8px;box-shadow:0 8px 20px rgba(2,6,23,0.06);transition:transform .35s}
+.stat:hover{transform:translateY(-6px)}
+.stat h4{margin:0;font-size:14px;opacity:.95}
+.stat .val{font-size:26px;font-weight:800}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(520px,1fr));gap:20px}
+.card{background:var(--card);padding:22px;border-radius:16px;box-shadow:0 10px 30px rgba(2,6,23,0.06);position:relative;overflow:hidden}
+.card h3{margin:0 0 6px}
+.small{color:var(--text);opacity:.6;font-size:14px}
+.rank{background:#374151;color:white;padding:14px;border-radius:12px;margin-top:12px}
+.progress{height:8px;background:#f1f5f9;border-radius:12px;margin-top:10px;overflow:hidden}
+.progress > i{display:block;height:100%;background:linear-gradient(90deg,#60a5fa,#7c3aed);width:0%;transition:width 0.8s}
+.timebox{background:linear-gradient(180deg,#f0f8ff,#eef6ff);padding:16px;border-radius:12px;margin-top:16px;font-weight:700;font-size:18px}
+.saved{background:linear-gradient(180deg,#ecfdf5,#d1fae5);padding:12px;border-radius:10px;margin-top:14px;font-weight:700;display:flex;justify-content:space-between;align-items:center}
+.actions{position:absolute;right:18px;top:18px;display:flex;gap:10px}
+.actionBtn{background:transparent;border:none;cursor:pointer;font-size:18px}
+.fade-in{animation:fadeIn .5s ease both}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* Modal / Form */
+.modal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(2,6,23,0.35);z-index:60}
+.modalCard{width:720px;background:var(--card);color:var(--text);border-radius:14px;padding:18px;box-shadow:0 20px 50px rgba(2,6,23,0.4)}
+.steps{display:flex;gap:10px;margin-bottom:12px}
+.step{flex:1;padding:8px;border-radius:8px;background:#f8fafc;text-align:center}
+.step.active{background:linear-gradient(90deg,#eef2ff,#fef3c7)}
+.addGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-height:240px;overflow:auto;padding:6px}
+.addGrid button{padding:8px;border-radius:8px;border:1px solid #e6eef8;background:#f8fafc;cursor:pointer;text-align:left}
+.addGrid button.selected{background:#4f46e5;color:white;border:none;box-shadow:0 8px 30px rgba(79,70,229,0.12)}
+.inputRow{display:flex;gap:10px;margin-top:12px}
+.inputRow input[type=date],.inputRow input[type=number],.inputRow input[type=text]{flex:1;padding:10px;border-radius:8px;border:1px solid #e6eef8}
+.formFooter{display:flex;justify-content:space-between;margin-top:14px}
+
+/* Forum */
+.forum{margin-top:28px}
+.post{background:var(--card);padding:14px;border-radius:12px;margin-bottom:12px}
+.comment{background:#f8fafc;padding:8px;border-radius:8px;margin-top:8px}
+
+/* Login/Register */
+.authModal .modalCard{width:420px}
+.field{display:block;margin-top:8px}
+.field input{width:100%;padding:10px;border-radius:8px;border:1px solid #e6eef8}
+
+/* Responsive */
+@media (max-width:760px){.grid{grid-template-columns:1fr}.addGrid{grid-template-columns:repeat(2,1fr)}.modalCard{width:92%}}
+</style>
+</head>
+<body>
+<div class="container" id="mainView" style="display:none">
+  <div class="top">
+    <div class="brand">
+      <h1>Twoja Droga do Wolności</h1>
+      <p>Witaj, <span id="usernameDisplay"></span> — pracuj nad sobą krok po kroku ✨</p>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center">
+      <button class="btn" id="openForumBtn">💬 Forum</button>
+      <button class="btn" id="logoutBtn">Wyloguj</button>
+      <button class="btn primary" id="openAddBtn">+ Dodaj nałóg</button>
+    </div>
+  </div>
+
+  <div class="card-row">
+    <div class="stat" id="statTracked" style="background:var(--accent1)"><h4>Śledzonych</h4><div class="val" id="valTracked">0</div></div>
+    <div class="stat" id="statPoints" style="background:var(--accent2)"><h4>Punkty</h4><div class="val" id="valPoints">0</div></div>
+    <div class="stat" id="statSaved" style="background:var(--accent3)"><h4>Zaoszczędzone</h4><div class="val" id="valSaved">0 PLN</div></div>
+    <div class="stat" id="statAvg" style="background:var(--accent4)"><h4>Średni czas</h4><div class="val" id="valAvg">0 dni</div></div>
+  </div>
+
+  <div class="grid" id="addictionList"></div>
+</div>
+
+<!-- Forum Page -->
+<div class="container" id="forumView" style="display:none">
+  <div style="display:flex;justify-content:space-between;align-items:center">
+    <h1>Forum</h1>
+    <div>
+      <button class="btn" id="backHome">🏠 Strona główna</button>
+    </div>
+  </div>
+  <div class="card">
+    <h3>Podziel się doświadczeniem</h3>
+    <div style="display:flex;gap:8px;margin-top:12px">
+      <input id="postTitle" placeholder="Tytuł posta" style="flex:1;padding:10px;border-radius:8px;border:1px solid #e6eef8" />
+      <input id="postBody" placeholder="Treść" style="flex:2;padding:10px;border-radius:8px;border:1px solid #e6eef8" />
+      <button class="btn primary" id="createPost">Dodaj post</button>
+    </div>
+    <div id="posts" style="margin-top:14px"></div>
+  </div>
+</div>
+
+<!-- Modal: Add/Edit Addiction -->
+<div id="modal" class="modal" style="display:none">
+  <div class="modalCard">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <h3 id="modalTitle">Dodaj nałóg</h3>
+      <button id="closeModal" class="btn">✖</button>
+    </div>
+
+    <div class="steps">
+      <div class="step active" data-step="1">1. Wybierz</div>
+      <div class="step" data-step="2">2. Data</div>
+      <div class="step" data-step="3">3. Częstotliwość</div>
+      <div class="step" data-step="4">4. Koszt</div>
+    </div>
+
+    <div id="formStep1">
+      <div class="addGrid" id="addGrid"></div>
+    </div>
+
+    <div id="formStep2" style="display:none">
+      <label>Data rzucenia:</label>
+      <div class="inputRow"><input type="date" id="quitDate" /></div>
+    </div>
+
+    <div id="formStep3" style="display:none">
+      <label>Częstotliwość (np. 5 razy dziennie):</label>
+      <div class="inputRow"><input type="text" id="frequency" /></div>
+    </div>
+
+    <div id="formStep4" style="display:none">
+      <label>Ile traciłeś tygodniowo (PLN):</label>
+      <div class="inputRow"><input type="number" id="cost" min="0" step="0.01" /></div>
+    </div>
+
+    <div class="formFooter">
+      <div>
+        <button class="btn" id="prevStep">Wstecz</button>
+      </div>
+      <div>
+        <button class="btn primary" id="nextStep">Dalej</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Login / Register Modals -->
+<div id="authLogin" class="modal authModal" style="display:none">
+  <div class="modalCard">
+    <h3>Logowanie</h3>
+    <div class="field"><input id="loginLogin" placeholder="Login" /></div>
+    <div class="field"><input id="loginPass" placeholder="Hasło" type="password"/></div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:10px"><button class="btn" id="openRegister">Rejestracja</button><button class="btn primary" id="doLogin">Zaloguj</button></div>
+  </div>
+</div>
+
+<div id="authRegister" class="modal authModal" style="display:none">
+  <div class="modalCard">
+    <h3>Rejestracja</h3>
+    <div class="field"><input id="regName" placeholder="Imię" /></div>
+    <div class="field"><input id="regLogin" placeholder="Login" /></div>
+    <div class="field"><input id="regPass" placeholder="Hasło" type="password"/></div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:10px"><button class="btn" id="openLogin">Anuluj</button><button class="btn primary" id="doRegister">Zarejestruj</button></div>
+  </div>
+</div>
+
+<script>
+// --- Keys and data ---
+const LS_KEY = 'freedom_app_addictions_v2';
+const LS_POSTS = 'freedom_app_posts_v2';
+const LS_USERS = 'freedom_app_users_v1';
+const LS_CUR = 'freedom_app_curuser_v1';
+
+let allData = JSON.parse(localStorage.getItem(LS_KEY) || '{}');
+let data = []; // current user's addictions
+let posts = JSON.parse(localStorage.getItem(LS_POSTS) || '[]');
+let users = JSON.parse(localStorage.getItem(LS_USERS) || '[]');
+let curUser = JSON.parse(localStorage.getItem(LS_CUR) || 'null');
+
+// addiction list (unchanged)
+const addictionsList = ["Chatboty (AI)","Adderall","Alkohol","Alfa-PVP (Flakka)","Alprazolam","Amfetamina","Gniew","Leki przeciwdepresyjne","Poszukiwanie uwagi","Wulgarny język","Barbiturany","Dopalacze","Piwo","Benadryl","Benzodiazepiny","Upijanie się","Objadanie napadowe","Objadanie się i przeczyszczanie","Napoje alkoholowe","Bourbon","Chleb","Buprenorfina","Kofeina","Konopie","Konopie (syntetyczne)","Węglowodany","Gryzienie policzka","Chemsex","Żucie i wypluwanie","Tytoń do żucia","Papierosy","Kokaina","Kodeina","Współuzależnienie","Kompulsywne wydawanie","Ciastka","Crack kokaina","Kryształowa metamfetamina","Nabiał","Aplikacje randkowe","Dekstrometorfan (DXM)","Difenhydramina","Przeglądanie złych wieści","Zaburzenia odżywiania","Zaburzenia odżywiania (niedojadanie)","Ecstasy","Napoje energetyczne","Nadmierne ćwiczenia","Fast food","Fentanyl","Ograniczanie jedzenia","Hazard","Gamma-hydroksymaślan (GHB)","Gin","Gluten","Plotkowanie","Wyrywanie włosów","Heroina","Środki wziewne","Instagram","Internet","Jedzenie śmieciowe","Ketamina","Strzelanie stawami","Kratom","Środki przeczyszczające","Lean","Gryzienie warg","Lisdeksamfetamina","LSD","Kłamanie","Lyrica","3-MMC","4-MMC","Marihuana","Marihuana (syntetyczna)","Masturbacja","Mięso i nabiał","Mefedron","Meskalina","Metamfetamina","Metadon","Metkatynon (CAT)","Metylofenidat","Mieszane sole amfetaminy","Środki rozluźniające mięśnie","Obgryzanie paznokci","Nikotyna","Podtlenek azotu","Spray do nosa","Zakupy online","Filmy online","Opiaty","Pica","Pornografia","Pregabalina","Przeczyszczanie","Ritalin","Rum","Szałwia","Samookaleczanie","Seks","Kradzież sklepowa","Krótkie filmy","Skubanie skóry","Środki nasenne","Snus","Media społecznościowe","Napoje gazowane","Rozpuszczalniki","Prześladowanie","Kradzież","Suboxone","Cukier","Słodycze","Syntetyczne katynony","Tequila","TikTok","Tytoń","Toksyczne związki","Tramadol","E-papierosy (wapowanie)","E-papierosy (THC)","Gry wideo","Rzeczywistość wirtualna","Wódka","Vyvanse","Whisky","Wino","Xanax","Zyn"];
+
+// ranks
+const ranks = [ {key:'Nowicjusz', min:0},{key:'Początkujący', min:10},{key:'Zaawansowany', min:30},{key:'Mistrz', min:70} ];
+
+// utils
+const uid = ()=> Math.random().toString(36).slice(2,9);
+function save(){
+  // save current user's data back into allData and store
+  if(curUser && curUser.id){
+    allData[curUser.id] = data;
+  }
+  localStorage.setItem(LS_KEY, JSON.stringify(allData));
+}
+const savePosts = ()=> localStorage.setItem(LS_POSTS,JSON.stringify(posts));
+const saveUsers = ()=> localStorage.setItem(LS_USERS,JSON.stringify(users));
+const saveCur = ()=> localStorage.setItem(LS_CUR,JSON.stringify(curUser));
+
+function getRank(points){
+  let current = ranks[0]; for(let r of ranks){ if(points>=r.min) current=r; }
+  let next = ranks.find(r=>r.min>current.min);
+  let progress = next ? Math.min(100, Math.round((points-current.min)/(next.min-current.min)*100)) : 100;
+  return {current:current.key,next: next? next.key : null,progress, toNext: next? next.min - points : 0};
+}
+
+// addiction list element moved up to avoid ReferenceError
+const listEl = document.getElementById('addictionList');
+
+// auth modals
+const authLogin = document.getElementById('authLogin');
+const authRegister = document.getElementById('authRegister');
+const mainView = document.getElementById('mainView');
+const forumView = document.getElementById('forumView');
+
+function showLogin(){ authLogin.style.display='flex'; }
+function hideLogin(){ authLogin.style.display='none'; }
+function showRegister(){ authRegister.style.display='flex'; }
+function hideRegister(){ authRegister.style.display='none'; }
+
+document.getElementById('openRegister').addEventListener('click',()=>{ hideLogin(); showRegister(); });
+document.getElementById('openLogin').addEventListener('click',()=>{ hideRegister(); showLogin(); });
+
+// login/register actions
+document.getElementById('doRegister').addEventListener('click',()=>{
+  const name = document.getElementById('regName').value.trim();
+  const login = document.getElementById('regLogin').value.trim();
+  const pass = document.getElementById('regPass').value;
+  if(!name||!login||!pass) return alert('Wypełnij wszystkie pola');
+  if(users.find(u=>u.login===login)) return alert('Login zajęty');
+  const newUser = {id:uid(),name,login,pass};
+  users.push(newUser); saveUsers(); alert('Zarejestrowano'); hideRegister(); showLogin();
+});
+
+document.getElementById('doLogin').addEventListener('click',()=>{
+  const login = document.getElementById('loginLogin').value.trim(); const pass = document.getElementById('loginPass').value;
+  const u = users.find(x=>x.login===login && x.pass===pass);
+  if(!u) return alert('Błędny login lub hasło');
+  curUser = {id:u.id,name:u.name,login:u.login}; saveCur(); // load user's data
+  data = allData[curUser.id] ? allData[curUser.id] : [];
+  hideLogin(); initAfterLogin();
+});
+
+document.getElementById('logoutBtn').addEventListener('click',()=>{ if(confirm('Wylogować się?')){ curUser=null; saveCur(); data=[]; mainView.style.display='none'; forumView.style.display='none'; showLogin(); }});
+
+// if no users exist, create demo user
+if(users.length===0){ users.push({id:uid(),name:'Demo',login:'demo',pass:'demo'}); saveUsers(); }
+
+function initAfterLogin(){
+  if(!curUser) return; document.getElementById('usernameDisplay').textContent = curUser.name; mainView.style.display='block'; forumView.style.display='none'; renderAll(); renderPosts();
+}
+
+// if not logged in, show login
+if(!curUser){ showLogin(); } else { data = allData[curUser.id] ? allData[curUser.id] : []; initAfterLogin(); }
+
+// forum navigation
+document.getElementById('openForumBtn').addEventListener('click',()=>{ mainView.style.display='none'; forumView.style.display='block'; renderPosts(); });
+document.getElementById('backHome').addEventListener('click',()=>{ mainView.style.display='block'; forumView.style.display='none'; });
+
+// posts
+function renderPosts(){ const el = document.getElementById('posts'); el.innerHTML=''; posts.slice().reverse().forEach(p=>{
+  const post = document.createElement('div'); post.className='post';
+  post.innerHTML = `<strong>${p.title}</strong><p>${p.body}</p><small class="small">${p.author} • ${new Date(p.created).toLocaleString()}</small><div style="margin-top:8px"><input placeholder="Dodaj komentarz..." id="c-${p.id}" style="padding:8px;border-radius:8px;border:1px solid #e6eef8;width:70%" /><button class="btn" data-post="${p.id}">Dodaj</button></div><div id="cmts-${p.id}" style="margin-top:8px"></div>`; el.appendChild(post);
+  const cmts = document.getElementById('cmts-'+p.id); p.comments.forEach(c=>{ const cc=document.createElement('div'); cc.className='comment';
+    let comControls = '';
+    if(curUser && curUser.name === c.author){ comControls = `<button class="btn" data-edit-comment="${c.id}" data-post-id="${p.id}">Edytuj</button><button class="btn" data-del-comment="${c.id}" data-post-id="${p.id}">Usuń</button>` }
+    cc.innerHTML = `${c.author}: ${c.text} — ${new Date(c.created).toLocaleString()}<br>${comControls}`; cmts.appendChild(cc);
+  });
+}); }
+
+document.getElementById('createPost').addEventListener('click',()=>{
+  if(!curUser) return alert('Zaloguj się aby dodać post');
+  const t = document.getElementById('postTitle').value.trim(); const b = document.getElementById('postBody').value.trim();
+  if(!t||!b) return alert('Wypełnij tytuł i treść.');
+  posts.push({id:uid(),title:t,body:b,created:Date.now(),author:curUser.name,comments:[]}); savePosts(); document.getElementById('postTitle').value=''; document.getElementById('postBody').value=''; renderPosts();
+});
+
+document.getElementById('posts').addEventListener('click',(e)=>{ const btn = e.target.closest('button'); if(!btn) return; const postId = btn.dataset.post; if(postId){ const inp = document.getElementById('c-'+postId); if(!inp) return; const txt = inp.value.trim(); if(!txt) return alert('Wpisz komentarz'); const p = posts.find(x=>x.id===postId); p.comments.push({id:uid(),text:txt,created:Date.now(),author:curUser?curUser.name:'Anon'}); savePosts(); renderPosts(); return; }
+
+  if(btn.dataset.editPost){ const id = btn.dataset.editPost; const p = posts.find(x=>x.id===id); if(!p) return; if(!curUser || curUser.name !== p.author) return; const nt = prompt('Nowy tytuł:', p.title); if(nt===null) return; const nb = prompt('Nowa treść:', p.body); if(nb===null) return; p.title = nt.trim(); p.body = nb.trim(); savePosts(); renderPosts(); return; }
+  if(btn.dataset.delPost){
+    const id = btn.dataset.delPost;
+    const p = posts.find(x=>x.id===id);
+    if(!p) return;
+    if(!curUser || curUser.name !== p.author) return;
+
+    if(confirm("Usunąć post?")){
+      // animacja usuwania
+      const postEl = btn.closest('.post');
+      if(postEl){
+        postEl.style.transition = 'opacity 0.4s, transform 0.4s';
+        postEl.style.opacity = '0';
+        postEl.style.transform = 'translateY(-10px)';
+        setTimeout(()=>{
+          posts = posts.filter(x=>x.id!==id);
+          savePosts();
+          renderPosts();
+        }, 400);
+      } else {
+        posts = posts.filter(x=>x.id!==id);
+        savePosts();
+        renderPosts();
+      }
+    }
+    return; if(!curUser || curUser.name !== p.author) return; if(confirm('Usunąć post?')){ posts = posts.filter(x=>x.id!==id); savePosts(); renderPosts(); } return; }
+  if(btn.dataset.editComment){ const cid = btn.dataset.editComment; const pid = btn.dataset.postId; const p = posts.find(x=>x.id===pid); if(!p) return; const c = p.comments.find(x=>x.id===cid); if(!c) return; if(!curUser || curUser.name !== c.author) return; const nt = prompt('Nowy komentarz:', c.text); if(nt===null) return; c.text = nt.trim(); savePosts(); renderPosts(); return; }
+  if(btn.dataset.delComment){ const cid = btn.dataset.delComment; const pid = btn.dataset.postId; const p = posts.find(x=>x.id===pid); if(!p) return; const c = p.comments.find(x=>x.id===cid); if(!c) return; if(!curUser || curUser.name !== c.author) return; if(confirm('Usunąć komentarz?')){ p.comments = p.comments.filter(x=>x.id!==cid); savePosts(); renderPosts(); } return; }
+});
+
+// --- Addictions logic ---
+
+function renderAll(){
+  const tracked = data.length;
+  const totalPoints = data.reduce((s,a)=>s+(a.points||0),0);
+  const avgDays = data.length? Math.round(data.reduce((s,a)=>s+((Date.now()-new Date(a.quitDate))/86400000),0)/data.length) : 0;
+  document.getElementById('valTracked').textContent = tracked;
+  document.getElementById('valPoints').textContent = totalPoints;
+  document.getElementById('valAvg').textContent = avgDays + ' dni';
+
+  listEl.innerHTML='';
+  data.forEach(item=>{
+    const card = document.createElement('div'); card.className='card fade-in';
+    card.innerHTML = `
+      <div class="actions">
+        <button class="actionBtn" title="Edytuj" data-id="${item.id}" data-action="edit">✏️</button>
+        <button class="actionBtn" title="Usuń" data-id="${item.id}" data-action="del">🗑️</button>
+      </div>
+      <h3>${item.name}</h3>
+      <p class="small">Od: ${new Date(item.quitDate).toLocaleDateString()}</p>
+      <div class="rank">${getRank(item.points||0).current} — ${item.points||0} punktów</div>
+      <p class="small">Następna ranga: ${getRank(item.points||0).next || '—'} ${getRank(item.points||0).toNext>0? '('+getRank(item.points||0).toNext+' pkt)': ''}</p>
+      <div class="progress"><i style="width:${getRank(item.points||0).progress}%"></i></div>
+      <div class="timebox" id="time-${item.id}">Ładowanie czasu...</div>
+      <div class="saved" id="saved-${item.id}">Zaoszczędzone <strong>0.00 PLN</strong></div>
+    `;
+    listEl.appendChild(card);
+  });
+}
+
+function updateTimers(){
+  let totalSaved = 0;
+  data.forEach(item=>{
+    const el = document.getElementById('time-'+item.id);
+    const sel = document.getElementById('saved-'+item.id);
+    if(!el || !sel) return;
+    const start = new Date(item.quitDate).getTime();
+    const diffMs = Date.now() - start;
+    if(diffMs<0){ el.textContent='Jeszcze nie zaczęte'; sel.querySelector('strong').textContent = '0.00 PLN'; return; }
+    let s = Math.floor(diffMs/1000);
+    const days = Math.floor(s/86400); s%=86400;
+    const hours = Math.floor(s/3600); s%=3600;
+    const minutes = Math.floor(s/60); const seconds = s%60;
+    el.textContent = `${days}d ${hours}h ${minutes}min ${seconds}s`;
+    const earned = days; if(earned !== item.points){ item.points = earned; save(); renderAll(); }
+    const weekly = Number(item.cost)||0; const perSecond = weekly / (7*24*3600); const saved = perSecond * Math.floor((Date.now() - start)/1000);
+    sel.querySelector('strong').textContent = saved.toFixed(2) + ' PLN';
+    totalSaved += saved;
+  });
+  document.getElementById('valSaved').textContent = totalSaved.toFixed(2) + ' PLN';
+}
+
+setInterval(updateTimers, 1000);
+
+// Modal form
+const modal = document.getElementById('modal');
+const addGrid = document.getElementById('addGrid');
+let formState = {step:1,selected:null,quitDate:'',frequency:'',cost:0,editId:null};
+
+function openModal(editId=null){
+  if(!curUser) return alert('Zaloguj się aby dodać nałóg');
+  formState = {step:1,selected:null,quitDate:'',frequency:'',cost:0,editId:editId};
+  document.getElementById('modalTitle').textContent = editId? 'Edytuj nałóg' : 'Dodaj nałóg';
+  const today = new Date().toISOString().slice(0,10);
+  document.getElementById('quitDate').value = today;
+  if(editId){ const it = data.find(d=>d.id===editId); if(it){ formState.selected=it.name; formState.quitDate=new Date(it.quitDate).toISOString(); formState.frequency=it.frequency; formState.cost=it.cost; document.getElementById('quitDate').value = new Date(it.quitDate).toISOString().slice(0,10); document.getElementById('frequency').value=it.frequency; document.getElementById('cost').value=it.cost; } }
+  modal.style.display='flex'; renderAddGrid(); goStep(1);
+}
+function closeModal(){ modal.style.display='none'; }
+
+document.getElementById('openAddBtn').addEventListener('click',()=>openModal());
+document.getElementById('closeModal').addEventListener('click',closeModal);
+
+function renderAddGrid(){ addGrid.innerHTML=''; addictionsList.forEach(name=>{ const b=document.createElement('button'); b.textContent=name; b.title=name; if(formState.selected===name) b.classList.add('selected'); b.addEventListener('click',()=>{ formState.selected=name; [...addGrid.children].forEach(x=>x.classList.remove('selected')); b.classList.add('selected'); }); addGrid.appendChild(b); }); }
+
+function goStep(n){ formState.step=n; document.querySelectorAll('.step').forEach(el=>el.classList.toggle('active', Number(el.dataset.step)===n));
+  document.getElementById('formStep1').style.display = n===1? 'block' : 'none';
+  document.getElementById('formStep2').style.display = n===2? 'block' : 'none';
+  document.getElementById('formStep3').style.display = n===3? 'block' : 'none';
+  document.getElementById('formStep4').style.display = n===4? 'block' : 'none';
+}
+
+document.getElementById('nextStep').addEventListener('click',()=>{
+  if(formState.step===1){ if(!formState.selected){ alert('Wybierz nałóg z siatki.'); return; } goStep(2); }
+  else if(formState.step===2){ const d = document.getElementById('quitDate').value; if(!d){ alert('Wybierz datę.'); return;} formState.quitDate=d; goStep(3); }
+  else if(formState.step===3){ const f = document.getElementById('frequency').value; formState.frequency=f||''; goStep(4); }
+  else if(formState.step===4){ const c = Number(document.getElementById('cost').value||0); formState.cost=c;
+    const selDate = document.getElementById('quitDate').value;
+    let finalDate;
+    const today = new Date().toISOString().slice(0,10);
+    if(selDate===today){ finalDate = new Date().toISOString(); }
+    else { finalDate = new Date(selDate + 'T00:00:00').toISOString(); }
+
+    if(formState.editId){ const it = data.find(d=>d.id===formState.editId); if(it){ it.name=formState.selected; it.quitDate=finalDate; it.frequency=formState.frequency; it.cost=formState.cost; save(); renderAll(); closeModal(); } }
+    else { const obj = {id:uid(), name:formState.selected, quitDate:finalDate, frequency:formState.frequency, cost:formState.cost, points:0, ownerId:curUser.id}; data.push(obj); save(); renderAll(); closeModal(); }
+  }
+});
+
+document.getElementById('prevStep').addEventListener('click',()=>{ if(formState.step>1) goStep(formState.step-1); else closeModal(); });
+
+// card edit/delete
+listEl.addEventListener('click',(e)=>{ const btn = e.target.closest('button'); if(!btn) return; const action = btn.dataset.action; const id = btn.dataset.id; if(action==='edit'){ const it = data.find(d=>d.id===id); if(!it) return; openModal(id); formState.selected=it.name; document.getElementById('quitDate').value=new Date(it.quitDate).toISOString().slice(0,10); document.getElementById('frequency').value=it.frequency; document.getElementById('cost').value=it.cost; formState.editId=id; goStep(1); } if(action==='del'){ if(confirm('Usunąć ten nałóg?')){ data = data.filter(d=>d.id!==id); save(); renderAll(); } } });
+
+// initial render
+renderAll(); updateTimers();
+
+// --- Reset wszystkich kont ---
+localStorage.removeItem('users');
+localStorage.removeItem('curUser');
+localStorage.removeItem('allData');
+
+// --- Animacja dodawania komentarzy ---
+function animateComment(el){
+  el.style.opacity = '0';
+  el.style.transform = 'translateY(10px)';
+  requestAnimationFrame(()=>{
+    el.style.transition = 'opacity 0.4s, transform 0.4s';
+    el.style.opacity = '1';
+    el.style.transform = 'translateY(0)';
+  });
+}
+
+// Podłączanie animacji po dodaniu komentarza
+function renderComments(postId){
+  const wrap = document.querySelector(`#comments-${postId}`);
+  if(!wrap) return;
+  wrap.querySelectorAll('.comment').forEach(c=>animateComment(c));
+}
+
+</script>
+</body>
+</html>
