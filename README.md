@@ -8,19 +8,23 @@ Interfejs pozwalający śledzić postępy użytkownika.
 
 Możliwość definiowania celów i zadań.
 
-Technologie Projekt oparty jest na:
+Powiadomienia wspierające użytkownika w codziennych działaniach.
+
+Obsługa podstawowych funkcji Androida, z wykorzystaniem natywnych komponentów.
+
+Technologie
+Projekt oparty jest na:
 
 Android SDK
 
-Java
-
-HTML , CSS , JS
+Kotlin lub Java (w zależności od źródeł)
 
 Gradle (pliki konfiguracyjne build.gradle.kts oraz settings.gradle.kts)
 
 Instalacja
 
-Sklonuj repozytorium: git clone https://github.com/Piotrkaluga/Moja-Droga-do-Wolno-.git
+Sklonuj repozytorium:
+git clone https://github.com/Piotrkaluga/Moja-Droga-do-Wolno-.git
 
 Otwórz projekt w Android Studio.
 
@@ -34,6 +38,13 @@ W Android Studio wybierz wariant „debug”.
 
 Uruchom aplikację na emulatorze lub na prawdziwym urządzeniu.
 
-Alternatywnie możesz użyć polecenia: ./gradlew installDebug
+Alternatywnie możesz użyć polecenia:
+./gradlew installDebug
 
-Struktura katalogów app – główny moduł aplikacji gradle – konfiguracja narzędzia Gradle build.gradle.kts – główny plik konfiguracji projektu settings.gradle.kts – konfiguracja modułów projektu gradlew i gradlew.bat – wrappery Gradle .idea – konfiguracja IDE
+Struktura katalogów
+app – główny moduł aplikacji
+gradle – konfiguracja narzędzia Gradle
+build.gradle.kts – główny plik konfiguracji projektu
+settings.gradle.kts – konfiguracja modułów projektu
+gradlew i gradlew.bat – wrappery Gradle
+.idea – konfiguracja IDE
