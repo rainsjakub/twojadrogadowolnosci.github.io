@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pobierz Repozytorium</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f2f2f2;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      text-align: center;
+      width: 100%;
+      max-width: 500px;
+      margin: 20px 0;
+    }
+    button {
+      padding: 12px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      background: #007bff;
+      color: white;
+      margin: 5px 0;
+      width: 100%;
+    }
+    .screenshots {
+      margin-top: 20px;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+    @media (min-width: 600px) {
+      .screenshots {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+    .screenshots img {
+      width: 100%;
+      border-radius: 10px;
+      background: #ddd;
+      height: 150px;
+      object-fit: cover;
+    }
+    .opis {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 800px;
+      margin: 20px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>Pobierz całe repozytorium</h2>
+    <p>Kliknij poniższy przycisk, aby pobrać plik ZIP.</p>
+
+    <button onclick="downloadRepo()">Pobierz ZIP</button>
+      <button onclick="downloadAPK()">Pobierz APK</button>
+      <div class="screenshots" style="margin-top:20px; display:grid; grid-template-columns: repeat(3, 1fr); gap:15px;">
+      <img src="screen1.png" alt="Screen 1" style="width:100%; border-radius:10px; background:#ddd; height:200px; object-fit:cover;" />
+      <img src="screen2.png" alt="Screen 2" style="width:100%; border-radius:10px; background:#ddd; height:200px; object-fit:cover;" />
+      <img src="screen3.png" alt="Screen 3" style="width:100%; border-radius:10px; background:#ddd; height:200px; object-fit:cover;" />
+      <img src="screen4.png" alt="Screen 4" style="width:100%; border-radius:10px; background:#ddd; height:200px; object-fit:cover;" />
+      <img src="screen5.png" alt="Screen 5" style="width:100%; border-radius:10px; background:#ddd; height:200px; object-fit:cover;" />
+      <img src="screen6.png" alt="Screen 6" style="width:100%; border-radius:10px; background:#ddd; height:200px; object-fit:cover;" />
+    </div>
+
+  </div>
+<script>
+    function downloadRepo() {
+      window.location.href = "https://github.com/Piotrkaluga/Moja-Droga-do-Wolno-/archive/refs/heads/main.zip";
+    }
+      function downloadAPK() {
+      window.location.href = "https://drive.google.com/uc?export=download&id=1_N0O89TYIHX3iwCWAmr9FIVzRhk_E5Es";
+    }
+  </script>
+  <section>
+  <h2>Informacje o projekcie</h2>
+  <h3>Na jakie potrzeby/problem odpowiada Wasze rozwiązanie?</h3>
+  <p>Nasza aplikacja odpowiada na problem rosnącej skali uzależnień wśród młodzieży, takich jak używki czy kompulsywne korzystanie z mediów społecznościowych. Ma wspierać użytkowników w zmianie nawyków i motywować ich w codziennej walce z uzależnieniem.</p>
+
+  <h3>W jakich technologiach powstała aplikacja?</h3>
+  <p>HTML, CSS, JavaScript, Android Studio.</p>
+
+  <h3>Opis działania aplikacji</h3>
+  <p>Aplikacja pozwala monitorować postępy w walce z uzależnieniem, liczy czas abstynencji, oblicza oszczędności oraz umożliwia dzielenie się osiągnięciami z innymi użytkownikami.</p>
+
+  <h3>Rozwój rozwiązania</h3>
+  <p>Planowany rozwój obejmuje współpracę z partnerami fundującymi nagrody, udział psychologów wspierających użytkowników oraz wykorzystanie AI do personalizacji motywacji.</p>
+
+  <h3>Zagrożenia i ryzyka</h3>
+  <p>Największe ryzyka to bezpieczeństwo danych użytkowników, konieczność moderacji forum oraz utrzymanie motywacji użytkowników.</p>
+
+  <h3>Dlaczego powinniśmy wygrać?</h3>
+  <p>Projekt ma realną wartość społeczną i może pomóc młodym ludziom w walce z uzależnieniami. Łączy technologię, wsparcie społeczne i AI, aby pozytywnie wpływać na zdrowie psychiczne.</p>
+</section>
+</body>
+</html>
