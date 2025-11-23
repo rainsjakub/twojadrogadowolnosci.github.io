@@ -1,0 +1,948 @@
+  <!DOCTYPE html>
+  <html lang="pl">
+  <head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Twoja Droga do Wolności</title>
+  <link rel="icon" href="ikona.png">
+  <style>
+    
+  :root{
+    --bg:#eef6ff;
+    --card:#fff;
+    --text:#0f172a;
+    --muted:rgba(15,23,42,0.65);
+    --accent1:linear-gradient(135deg,#4f46e5,#7c3aed);
+    --accent2:linear-gradient(135deg,#fb923c,#f97316);
+    --accent3:linear-gradient(135deg,#10b981,#06b6d4);
+    --accent4:linear-gradient(135deg,#f472b6,#8b5cf6);
+    --radius:12px;
+    --glass: rgba(255,255,255,0.6);
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+  .container{max-width:1200px;margin:24px auto;padding:16px}
+  .top{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+  .brand h1{margin:0;font-size:clamp(20px,3.5vw,34px)}
+  .brand p{margin:6px 0 0;color:var(--muted);font-size:clamp(12px,1.5vw,14px)}
+  .btn{padding:10px 14px;border-radius:10px;border:none;cursor:pointer;font-weight:600;background:transparent}
+  .primary{background:var(--accent1);color:white;box-shadow:0 8px 30px rgba(124,58,237,0.18);}
+  .card-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:18px 0}
+  .stat{padding:16px;border-radius:var(--radius);color:white;min-height:84px;display:flex;flex-direction:column;justify-content:center;gap:6px;box-shadow:0 8px 20px rgba(2,6,23,0.06);transition:transform .28s}
+  .stat:hover{transform:translateY(-6px)}
+  .stat h4{margin:0;font-size:13px;opacity:.95}
+  .stat .val{font-size:clamp(18px,3vw,26px);font-weight:800}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px}
+  .card{background:var(--card);padding:18px;border-radius:16px;box-shadow:0 10px 30px rgba(2,6,23,0.06);position:relative;overflow:hidden;min-height:120px}
+  .card h3{margin:0 0 6px;font-size:18px}
+  .small{color:var(--muted);opacity:.9;font-size:13px}
+  .rank{background:#374151;color:white;padding:10px;border-radius:10px;margin-top:12px;font-size:14px}
+  .progress{height:8px;background:#f1f5f9;border-radius:12px;margin-top:10px;overflow:hidden}
+  .progress > i{display:block;height:100%;background:linear-gradient(90deg,#60a5fa,#7c3aed);width:0%;transition:width 0.8s}
+  .timebox{background:linear-gradient(180deg,#f0f8ff,#eef6ff);padding:12px;border-radius:10px;margin-top:12px;font-weight:700;font-size:16px}
+  .saved{background:linear-gradient(180deg,#ecfdf5,#d1fae5);padding:10px;border-radius:10px;margin-top:12px;font-weight:700;display:flex;justify-content:space-between;align-items:center}
+  .actions{position:absolute;right:12px;top:12px;display:flex;gap:8px}
+  .actionBtn{background:transparent;border:none;cursor:pointer;font-size:18px;padding:8px;border-radius:8px}
+  .fade-in{animation:fadeIn .45s ease both}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+  
+  .modal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(2,6,23,0.35);z-index:60;padding:20px}
+  .modalCard{width:720px;background:var(--card);color:var(--text);border-radius:14px;padding:18px;box-shadow:0 20px 50px rgba(2,6,23,0.4);max-height:calc(100vh - 48px);overflow:auto}
+  .steps{display:flex;gap:10px;margin-bottom:12px}
+  .step{flex:1;padding:8px;border-radius:8px;background:#f8fafc;text-align:center;font-size:13px}
+  .step.active{background:linear-gradient(90deg,#eef2ff,#fef3c7)}
+  .addGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-height:320px;overflow:auto;padding:6px}
+  .addGrid button{padding:10px;border-radius:8px;border:1px solid #e6eef8;background:#f8fafc;cursor:pointer;text-align:left}
+  .addGrid button.selected{background:#4f46e5;color:white;border:none;box-shadow:0 8px 30px rgba(79,70,229,0.12)}
+  .inputRow{display:flex;gap:10px;margin-top:12px}
+  .inputRow input[type=date],.inputRow input[type=number],.inputRow input[type=text]{flex:1;padding:10px;border-radius:8px;border:1px solid #e6eef8}
+  .formFooter{display:flex;justify-content:space-between;margin-top:14px}
+
+  
+  .forum{margin-top:28px}
+  .post{background:var(--card);padding:14px;border-radius:12px;margin-bottom:12px}
+  .comment{background:#f8fafc;padding:8px;border-radius:8px;margin-top:8px}
+
+  
+  .authModal .modalCard{width:420px}
+  .field{display:block;margin-top:8px}
+  .field input{width:100%;padding:10px;border-radius:8px;border:1px solid #e6eef8}
+
+ 
+  @media (max-width:1100px){ .card-row{grid-template-columns:repeat(2,1fr)} }
+  @media (max-width:860px){
+    .card-row{grid-template-columns:repeat(2,1fr)}
+    .addGrid{grid-template-columns:repeat(2,1fr)}
+    .modalCard{width:92%;padding:14px}
+    .actions{position:static;margin-top:12px}
+  }
+  @media (max-width:600px){
+    .container{margin:12px;padding:12px}
+    .top{gap:12px}
+    .brand p{font-size:13px}
+    .card-row{grid-template-columns:1fr;gap:10px}
+    .grid{grid-template-columns:1fr}
+    .addGrid{grid-template-columns:repeat(2,1fr)}
+    .modal{align-items:flex-end}
+    .modalCard{width:100%;border-radius:12px 12px 0 0;max-height:85vh}
+    .actions{display:flex;gap:6px;justify-content:flex-end}
+    .actionBtn{padding:10px}
+    .btn{padding:10px 12px;font-size:15px}
+    .primary{padding:10px 12px}
+    .timebox{font-size:15px}
+    .rank{font-size:13px;padding:8px}
+  }
+
+  
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+ 
+  .hidden{display:none}
+    
+    .login-container {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 1rem;
+    }
+
+    @media (max-width: 480px) {
+      .login-container {
+        padding-top: 0;
+      }
+    }
+
+      
+      .dymek-czatu {
+          width: 60px;
+          height: 60px;
+          background-color: #343541;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          position: fixed;
+          bottom: 20px;
+          right: 20px;
+          box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+          z-index: 50; 
+      }
+
+      .dymek-czatu svg {
+          width: 30px;
+          fill: #fff;
+      }
+
+  
+      .kontener {
+          width: 90%;
+          max-width: 350px;
+          height: 60vh;
+          background-color: #1e1e2f;
+          border-radius: 8px;
+          display: none; 
+          flex-direction: column;
+          position: fixed;
+          bottom: 90px;
+          right: 20px;
+          box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+          z-index: 55; 
+      }
+
+      .pasek-nawigacji {
+          width: 100%;
+          height: 40px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+      }
+
+      .pasek-nawigacji a {
+          color: #6B6C7B;
+          white-space: nowrap;
+          margin-left: 10px;
+          user-select: none;
+      }
+
+      .zamknij {
+          width: 40px;
+          height: 40px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          position: relative;
+          cursor: pointer;
+      }
+
+      .linia {
+          position: absolute;
+          width: 20px;
+          height: 3px;
+          background-color: #6B6C7B;
+          border-radius: 30px;
+      }
+
+      .linia.one { transform: rotate(45deg); }
+      .linia.dwa { transform: rotate(135deg); }
+
+      .obszar-wiadomosci {
+          background-color: #2a2a40;
+          width: 100%;
+          height: calc(100% - 110px);
+          display: flex;
+          flex-direction: column;
+          overflow-y: auto;
+          padding: 5px;
+      }
+
+      .obszar-wysylania {
+          background-color: #343541;
+          width: 100%;
+          height: 70px;
+          display: flex;
+          border-radius: 8px;
+      }
+
+      .wiadomosc {
+          width: 100%;
+          margin: 4px 0;
+          padding: 6px 8px;
+          border-radius: 6px;
+      }
+      .uzytkownik {
+          background-color: #3b3b55;
+          color: #fff;
+          align-self: flex-end; 
+      }
+      .bot {
+          background-color: #50506a;
+          color: #fff;
+          align-self: flex-start; 
+      }
+
+      .wiadomosc.one, .wiadomosc.three, .wiadomosc.five { background-color: #2E2F3A; }
+      .wiadomosc.two, .wiadomosc.four, .wiadomosc.six { background-color: #343541; }
+
+      .wyslij-img { width: 30px; }
+
+      .input-wysylania {
+          outline: none;
+          border: none;
+          background: none;
+          height: 40px;
+          width: 230px;
+          border-radius: 7px;
+          color: white;
+          overflow: hidden;
+          margin-left: 5px;
+      }
+
+      .input-wysylania::placeholder { color: #828E9E; }
+
+      .miejsce-inputu {
+          display: flex;
+          flex-direction: row;
+          margin-top: 15px;
+          margin-left: 10px;
+          align-items: center;
+          background-color: #40414F;
+          border-radius: 7px;
+          height: 40px;
+          width: calc(100% - 20px);
+          gap: 5px;
+          border: 1px solid #2E2F3A;
+      }
+
+      @media (max-width: 500px) {
+          .dymek-czatu {
+              width: 50px;
+              height: 50px;
+              bottom: 15px;
+              right: 15px;
+          }
+          .kontener {
+              width: 95%;
+              right: 2.5%;
+              bottom: 80px;
+              height: 65vh;
+          }
+          .input-wysylania {
+              width: 70%;
+          }
+      }
+
+      .wyslij {
+          width: 30px;
+          height: 30px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+      }
+
+      .ikona-wyslij { width: 17px; }
+
+      /* Osiągnięcia */
+  .ach-card {
+      background: var(--card);
+      padding: 20px;
+      border-radius: 16px;
+      text-align: center;
+      transition: transform 0.3s;
+      border: 2px solid transparent;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+  }
+  .ach-card.locked {
+      opacity: 0.6;
+      filter: grayscale(1);
+      background: #e2e8f0;
+  }
+  .ach-card.unlocked {
+      border-color: #10b981;
+      background: linear-gradient(180deg, #fff, #ecfdf5);
+      box-shadow: 0 10px 25px rgba(16, 185, 129, 0.15);
+  }
+  .ach-card.unlocked:hover { transform: translateY(-5px); }
+  .ach-icon { font-size: 40px; margin-bottom: 5px; }
+  .ach-title { font-weight: 800; font-size: 16px; margin: 0; }
+  .ach-desc { font-size: 13px; color: var(--muted); margin: 0; }
+  .ach-status { 
+      margin-top: auto; 
+      font-size: 12px; 
+      font-weight: bold; 
+      padding: 4px 10px; 
+      border-radius: 20px; 
+  }
+  .locked .ach-status { background: #cbd5e1; color: #475569; }
+  .unlocked .ach-status { background: #d1fae5; color: #059669; }
+
+  </style>
+  </head>
+  <body>
+  <div class="container" id="mainView" style="display:none">
+    <div class="top">
+      <div class="brand">
+        <h1>Twoja Droga do Wolności</h1>
+        <p>Witaj, <span id="usernameDisplay"></span> — pracuj nad sobą krok po kroku ✨</p>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <button class="btn" id="openAchievBtn">🏆 Osiągnięcia</button>
+        <button class="btn" id="openForumBtn">💬 Forum</button>
+        <button class="btn" id="logoutBtn">Wyloguj</button>
+        <button class="btn primary" id="openAddBtn">+ Dodaj nałóg</button>
+      </div>
+    </div>
+
+    <div class="card-row" role="status" aria-live="polite">
+      <div class="stat" id="statTracked" style="background:var(--accent1)"><h4>Śledzonych</h4><div class="val" id="valTracked">0</div></div>
+      <div class="stat" id="statPoints" style="background:var(--accent2)"><h4>Punkty</h4><div class="val" id="valPoints">0</div></div>
+      <div class="stat" id="statSaved" style="background:var(--accent3)"><h4>Zaoszczędzone</h4><div class="val" id="valSaved">0 PLN</div></div>
+      <div class="stat" id="statAvg" style="background:var(--accent4)"><h4>Średni czas</h4><div class="val" id="valAvg">0 dni</div></div>
+    </div>
+
+    <div class="grid" id="addictionList"></div>
+  </div>
+<div class="container" id="achievementsView" style="display:none">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;margin-bottom:20px;">
+      <h1 style="margin:0">Twoje Osiągnięcia</h1>
+      <button class="btn" id="backHomeFromAch">🏠 Strona główna</button>
+    </div>
+    
+    <div class="card" style="margin-bottom:20px; text-align:center;">
+        <h3 id="achievProgressText">Odblokowano: 0/0</h3>
+        <div class="progress"><i id="achievProgressBar" style="width:0%"></i></div>
+    </div>
+
+    <div class="grid" id="achievementsList">
+      </div>
+  </div>
+  <div class="container" id="forumView" style="display:none">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap">
+      <h1 style="margin:0">Forum</h1>
+      <div>
+        <button class="btn" id="backHome">🏠 Strona główna</button>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Podziel się doświadczeniem</h3>
+      <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+        <input id="postTitle" placeholder="Tytuł posta" style="flex:1;min-width:160px;padding:10px;border-radius:8px;border:1px solid #e6eef8" />
+        <input id="postBody" placeholder="Treść" style="flex:2;min-width:200px;padding:10px;border-radius:8px;border:1px solid #e6eef8" />
+        <button class="btn primary" id="createPost">Dodaj post</button>
+      </div>
+      <div id="posts" style="margin-top:14px"></div>
+    </div>
+  </div>
+
+  <div id="modal" class="modal hidden">
+    <div class="modalCard" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <h3 id="modalTitle">Dodaj nałóg</h3>
+        <button id="closeModal" class="btn" aria-label="Zamknij">✖</button>
+      </div>
+
+      <div class="steps" role="tablist">
+        <div class="step active" data-step="1">1. Wybierz</div>
+        <div class="step" data-step="2">2. Data</div>
+        <div class="step" data-step="3">3. Częstotliwość</div>
+        <div class="step" data-step="4">4. Koszt</div>
+      </div>
+
+      <div id="formStep1">
+        <div class="addGrid" id="addGrid"></div>
+      </div>
+
+      <div id="formStep2" style="display:none">
+        <label>Data rzucenia:</label>
+        <div class="inputRow"><input type="date" id="quitDate" /></div>
+      </div>
+
+      <div id="formStep3" style="display:none">
+        <label>Częstotliwość (np. 5 razy dziennie):</label>
+        <div class="inputRow"><input type="text" id="frequency" /></div>
+      </div>
+
+      <div id="formStep4" style="display:none">
+        <label>Ile traciłeś tygodniowo (PLN):</label>
+        <div class="inputRow"><input type="number" id="cost" min="0" step="0.01" /></div>
+      </div>
+
+      <div class="formFooter">
+        <div>
+          <button class="btn" id="prevStep">Wstecz</button>
+        </div>
+        <div>
+          <button class="btn primary" id="nextStep">Dalej</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="authLogin" class="modal authModal hidden">
+    <div class="modalCard">
+      <h3>Logowanie</h3>
+      <div class="field"><input id="loginLogin" placeholder="Podaj swój nick" /></div>
+      <button class="btn primary" id="doLogin">Zaloguj</button></div> 
+    </div>
+  </div>
+
+  <div id="authRegister" class="modal authModal hidden">
+    <div class="modalCard">
+      <h3>Rejestracja</h3>
+      <div class="field"><input id="regName" placeholder="Imię" /></div>
+      <div class="field"><input id="regLogin" placeholder="Login" /></div>
+      <div class="field"><input id="regPass" placeholder="Hasło" type="password"/></div>
+      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:10px"><button class="btn" id="openLogin">Anuluj</button><button class="btn primary" id="doRegister">Zarejestruj</button></div>
+    </div>
+  </div>
+
+  <script>
+ 
+  const LS_KEY = 'freedom_app_addictions_v2';
+  const LS_POSTS = 'freedom_app_posts_v2';
+  const LS_USERS = 'freedom_app_users_v1';
+  const LS_CUR = 'freedom_app_curuser_v1';
+
+  let allData = JSON.parse(localStorage.getItem(LS_KEY) || '{}');
+  let data = []; 
+  let posts = JSON.parse(localStorage.getItem(LS_POSTS) || '[]');
+  let users = JSON.parse(localStorage.getItem(LS_USERS) || '[]');
+  let curUser = JSON.parse(localStorage.getItem(LS_CUR) || 'null');
+
+  // wybór listy uzaleznien
+  const addictionsList = ["Chatboty (AI)","Adderall","Alkohol","Alfa-PVP (Flakka)","Alprazolam","Amfetamina","Gniew","Leki przeciwdepresyjne","Poszukiwanie uwagi","Wulgarny język","Barbiturany","Dopalacze","Piwo","Benadryl","Benzodiazepiny","Upijanie się","Objadanie napadowe","Objadanie się i przeczyszczanie","Napoje alkoholowe","Bourbon","Chleb","Buprenorfina","Kofeina","Konopie","Konopie (syntetyczne)","Węglowodany","Gryzienie policzka","Chemsex","Żucie i wypluwanie","Tytoń do żucia","Papierosy","Kokaina","Kodeina","Współuzależnienie","Kompulsywne wydawanie","Ciastka","Crack kokaina","Kryształowa metamfetamina","Nabiał","Aplikacje randkowe","Dekstrometorfan (DXM)","Difenhydramina","Przeglądanie złych wieści","Zaburzenia odżywiania","Zaburzenia odżywiania (niedojadanie)","Ecstasy","Napoje energetyczne","Nadmierne ćwiczenia","Fast food","Fentanyl","Ograniczanie jedzenia","Hazard","Gamma-hydroksymaślan (GHB)","Gin","Gluten","Plotkowanie","Wyrywanie włosów","Heroina","Środki wziewne","Instagram","Internet","Jedzenie śmieciowe","Ketamina","Strzelanie stawami","Kratom","Środki przeczyszczające","Lean","Gryzienie warg","Lisdeksamfetamina","LSD","Kłamanie","Lyrica","3-MMC","4-MMC","Marihuana","Marihuana (syntetyczna)","Masturbacja","Mięso i nabiał","Mefedron","Meskalina","Metamfetamina","Metadon","Metkatynon (CAT)","Metylofenidat","Mieszane sole amfetaminy","Środki rozluźniające mięśnie","Obgryzanie paznokci","Nikotyna","Podtlenek azotu","Spray do nosa","Zakupy online","Filmy online","Opiaty","Pica","Pornografia","Pregabalina","Przeczyszczanie","Ritalin","Rum","Szałwia","Samookaleczanie","Seks","Kradzież sklepowa","Krótkie filmy","Skubanie skóry","Środki nasenne","Snus","Media społecznościowe","Napoje gazowane","Rozpuszczalniki","Prześladowanie","Kradzież","Suboxone","Cukier","Słodycze","Syntetyczne katynony","Tequila","TikTok","Tytoń","Toksyczne związki","Tramadol","E-papierosy (wapowanie)","E-papierosy (THC)","Gry wideo","Rzeczywistość wirtualna","Wódka","Vyvanse","Whisky","Wino","Xanax","Zyn"];
+
+  // rangi
+  const ranks = [ {key:'Nowicjusz', min:0},{key:'Początkujący', min:10},{key:'Zaawansowany', min:30},{key:'Mistrz', min:70} ];
+
+  
+  const uid = ()=> Math.random().toString(36).slice(2,9);
+  function save(){
+    if(curUser && curUser.id){ allData[curUser.id] = data; }
+    localStorage.setItem(LS_KEY, JSON.stringify(allData));
+  }
+  const savePosts = ()=> localStorage.setItem(LS_POSTS,JSON.stringify(posts));
+  const saveUsers = ()=> localStorage.setItem(LS_USERS,JSON.stringify(users));
+  const saveCur = ()=> localStorage.setItem(LS_CUR,JSON.stringify(curUser));
+
+  function getRank(points){
+    let current = ranks[0]; for(let r of ranks){ if(points>=r.min) current=r; }
+    let next = ranks.find(r=>r.min>current.min);
+    let progress = next ? Math.min(100, Math.round((points-current.min)/(next.min-current.min)*100)) : 100;
+    return {current:current.key,next: next? next.key : null,progress, toNext: next? next.min - points : 0};
+  }
+
+  const listEl = document.getElementById('addictionList');
+
+  
+  const authLogin = document.getElementById('authLogin');
+  const authRegister = document.getElementById('authRegister');
+  const mainView = document.getElementById('mainView');
+  const forumView = document.getElementById('forumView');
+
+  function showLogin(){ authLogin.classList.remove('hidden'); }
+  function hideLogin(){ authLogin.classList.add('hidden'); }
+  function showRegister(){ authRegister.classList.remove('hidden'); }
+  function hideRegister(){ authRegister.classList.add('hidden'); }
+
+  
+  document.getElementById('openLogin').addEventListener('click',()=>{ hideRegister(); showLogin(); });
+
+ 
+  let btn20 = document.getElementById("doLogin");
+  function logowanie1(){
+    const loginInput = document.getElementById("loginLogin");
+    const loginValue = loginInput.value.trim();
+
+    if (loginValue !== "") {
+        // poprwaiona wersja logowania
+        curUser = {
+            id: uid(), 
+            name: loginValue, 
+            login: loginValue 
+        };
+        saveCur();
+        data = allData[curUser.id] ? allData[curUser.id] : [];
+        hideLogin();
+        initAfterLogin();
+    } else {
+        alert("Podaj login!");
+    }
+  }
+  btn20.addEventListener("click",logowanie1)
+
+
+  document.getElementById('logoutBtn').addEventListener('click', () => {
+      
+      curUser = null;
+      saveCur();
+      data = [];
+      
+      // ukrywanie bloku glownego i forum i reszty
+      mainView.style.display = 'none';
+      forumView.style.display = 'none';
+      
+     
+      if(document.getElementById('achievementsView')) {
+          document.getElementById('achievementsView').style.display = 'none';
+      }
+
+     
+      showLogin();
+  });
+ 
+  if(users.length===0){ users.push({id:uid(),name:'Demo',login:'demo',pass:'demo'}); saveUsers(); }
+
+  function initAfterLogin(){
+    if(!curUser) return; document.getElementById('usernameDisplay').textContent = curUser.name; mainView.style.display='block'; forumView.style.display='none'; renderAll(); renderPosts();
+  }
+
+  if(!curUser){ showLogin(); } else { data = allData[curUser.id] ? allData[curUser.id] : []; initAfterLogin(); }
+
+ 
+  document.getElementById('openForumBtn').addEventListener('click',()=>{ mainView.style.display='none'; forumView.style.display='block'; renderPosts(); });
+  document.getElementById('backHome').addEventListener('click',()=>{ mainView.style.display='block'; forumView.style.display='none'; });
+
+  // posty na forum
+  function renderPosts(){ const el = document.getElementById('posts'); el.innerHTML=''; posts.slice().reverse().forEach(p=>{
+    const post = document.createElement('div'); post.className='post';
+    post.innerHTML = `<strong>${p.title}</strong><p>${p.body}</p><small class="small">${p.author} • ${new Date(p.created).toLocaleString()}</small><div style="margin-top:8px"><input placeholder="Dodaj komentarz..." id="c-${p.id}" style="padding:8px;border-radius:8px;border:1px solid #e6eef8;width:70%" /><button class="btn" data-post="${p.id}">Dodaj</button></div><div id="cmts-${p.id}" style="margin-top:8px"></div>`; el.appendChild(post);
+    const cmts = document.getElementById('cmts-'+p.id); p.comments.forEach(c=>{ const cc=document.createElement('div'); cc.className='comment';
+      let comControls = '';
+      if(curUser && curUser.name === c.author){ comControls = `<button class="btn" data-edit-comment="${c.id}" data-post-id="${p.id}">Edytuj</button><button class="btn" data-del-comment="${c.id}" data-post-id="${p.id}">Usuń</button>` }
+      cc.innerHTML = `${c.author}: ${c.text} — ${new Date(c.created).toLocaleString()}<br>${comControls}`; cmts.appendChild(cc);
+    });
+  }); }
+
+  document.getElementById('createPost').addEventListener('click',()=>{
+    if(!curUser) return alert('Zaloguj się aby dodać post');
+    const t = document.getElementById('postTitle').value.trim(); const b = document.getElementById('postBody').value.trim();
+    if(!t||!b) return alert('Wypełnij tytuł i treść.');
+    posts.push({id:uid(),title:t,body:b,created:Date.now(),author:curUser.name,comments:[]}); savePosts(); document.getElementById('postTitle').value=''; document.getElementById('postBody').value=''; renderPosts();
+  });
+
+  document.getElementById('posts').addEventListener('click',(e)=>{ const btn = e.target.closest('button'); if(!btn) return; const postId = btn.dataset.post; if(postId){ const inp = document.getElementById('c-'+postId); if(!inp) return; const txt = inp.value.trim(); if(!txt) return alert('Wpisz komentarz'); const p = posts.find(x=>x.id===postId); p.comments.push({id:uid(),text:txt,created:Date.now(),author:curUser?curUser.name:'Anon'}); savePosts(); renderPosts(); return; }
+
+    if(btn.dataset.editPost){ const id = btn.dataset.editPost; const p = posts.find(x=>x.id===id); if(!p) return; if(!curUser || curUser.name !== p.author) return; const nt = prompt('Nowy tytuł:', p.title); if(nt===null) return; const nb = prompt('Nowa treść:', p.body); if(nb===null) return; p.title = nt.trim(); p.body = nb.trim(); savePosts(); renderPosts(); return; }
+    if(btn.dataset.delPost){
+      const id = btn.dataset.delPost;
+      const p = posts.find(x=>x.id===id);
+      if(!p) return;
+      if(!curUser || curUser.name !== p.author) return;
+
+      if(confirm("Usunąć post?")){
+        const postEl = btn.closest('.post');
+        if(postEl){
+          postEl.style.transition = 'opacity 0.4s, transform 0.4s';
+          postEl.style.opacity = '0';
+          postEl.style.transform = 'translateY(-10px)';
+          setTimeout(()=>{
+            posts = posts.filter(x=>x.id!==id);
+            savePosts();
+            renderPosts();
+          }, 400);
+        } else {
+          posts = posts.filter(x=>x.id!==id);
+          savePosts();
+          renderPosts();
+        }
+      }
+      return;
+    }
+    if(btn.dataset.editComment){ const cid = btn.dataset.editComment; const pid = btn.dataset.postId; const p = posts.find(x=>x.id===pid); if(!p) return; const c = p.comments.find(x=>x.id===cid); if(!c) return; if(!curUser || curUser.name !== c.author) return; const nt = prompt('Nowy komentarz:', c.text); if(nt===null) return; c.text = nt.trim(); savePosts(); renderPosts(); return; }
+    if(btn.dataset.delComment){ const cid = btn.dataset.delComment; const pid = btn.dataset.postId; const p = posts.find(x=>x.id===pid); if(!p) return; const c = p.comments.find(x=>x.id===cid); if(!c) return; if(!curUser || curUser.name !== c.author) return; if(confirm('Usunąć komentarz?')){ p.comments = p.comments.filter(x=>x.id!==cid); savePosts(); renderPosts(); } return; }
+  });
+
+  // Dzialanie aplikacji kalkulacja czasu pieniedzy itd
+
+  function renderAll(){
+    const tracked = data.length;
+    const totalPoints = data.reduce((s,a)=>s+(a.points||0),0);
+    const avgDays = data.length? Math.round(data.reduce((s,a)=>s+((Date.now()-new Date(a.quitDate))/86400000),0)/data.length) : 0;
+    document.getElementById('valTracked').textContent = tracked;
+    document.getElementById('valPoints').textContent = totalPoints;
+    document.getElementById('valAvg').textContent = avgDays + ' dni';
+
+    listEl.innerHTML='';
+    data.forEach(item=>{
+      const card = document.createElement('div'); card.className='card fade-in';
+      card.innerHTML = `
+        <div class="actions">
+          <button class="actionBtn" title="Edytuj" data-id="${item.id}" data-action="edit">✏️</button>
+          <button class="actionBtn" title="Usuń" data-id="${item.id}" data-action="del">🗑️</button>
+        </div>
+        <h3>${item.name}</h3>
+        <p class="small">Od: ${new Date(item.quitDate).toLocaleDateString()}</p>
+        <div class="rank">${getRank(item.points||0).current} — ${item.points||0} punktów</div>
+        <p class="small">Następna ranga: ${getRank(item.points||0).next || '—'} ${getRank(item.points||0).toNext>0? '('+getRank(item.points||0).toNext+' pkt)': ''}</p>
+        <div class="progress"><i style="width:${getRank(item.points||0).progress}%"></i></div>
+        <div class="timebox" id="time-${item.id}">Ładowanie czasu...</div>
+        <div class="saved" id="saved-${item.id}">Zaoszczędzone <strong>0.00 PLN</strong></div>
+      `;
+      listEl.appendChild(card);
+    });
+  }
+
+  function updateTimers(){
+    let totalSaved = 0;
+    data.forEach(item=>{
+      const el = document.getElementById('time-'+item.id);
+      const sel = document.getElementById('saved-'+item.id);
+      if(!el || !sel) return;
+      const start = new Date(item.quitDate).getTime();
+      const diffMs = Date.now() - start;
+      if(diffMs<0){ el.textContent='Jeszcze nie zaczęte'; sel.querySelector('strong').textContent = '0.00 PLN'; return; }
+      let s = Math.floor(diffMs/1000);
+      const days = Math.floor(s/86400); s%=86400;
+      const hours = Math.floor(s/3600); s%=3600;
+      const minutes = Math.floor(s/60); const seconds = s%60;
+      el.textContent = `${days}d ${hours}h ${minutes}min ${seconds}s`;
+      const earned = days; if(earned !== item.points){ item.points = earned; save(); renderAll(); }
+      const weekly = Number(item.cost)||0; const perSecond = weekly / (7*24*3600); const saved = perSecond * Math.floor((Date.now() - start)/1000);
+      sel.querySelector('strong').textContent = saved.toFixed(2) + ' PLN';
+      totalSaved += saved;
+    });
+    document.getElementById('valSaved').textContent = totalSaved.toFixed(2) + ' PLN';
+  }
+
+  setInterval(updateTimers, 1000);
+
+  
+  const modal = document.getElementById('modal');
+  const addGrid = document.getElementById('addGrid');
+  let formState = {step:1,selected:null,quitDate:'',frequency:'',cost:0,editId:null};
+
+  function openModal(editId=null){
+    if(!curUser) return alert('Zaloguj się aby dodać nałóg');
+    formState = {step:1,selected:null,quitDate:'',frequency:'',cost:0,editId:editId};
+    document.getElementById('modalTitle').textContent = editId? 'Edytuj nałóg' : 'Dodaj nałóg';
+    const today = new Date().toISOString().slice(0,10);
+    document.getElementById('quitDate').value = today;
+    if(editId){ const it = data.find(d=>d.id===editId); if(it){ formState.selected=it.name; formState.quitDate=new Date(it.quitDate).toISOString(); formState.frequency=it.frequency; formState.cost=it.cost; document.getElementById('quitDate').value = new Date(it.quitDate).toISOString().slice(0,10); document.getElementById('frequency').value=it.frequency; document.getElementById('cost').value=it.cost; } }
+    modal.classList.remove('hidden'); renderAddGrid(); goStep(1);
+  }
+  function closeModal(){ modal.classList.add('hidden'); }
+
+  document.getElementById('openAddBtn').addEventListener('click',()=>openModal());
+  document.getElementById('closeModal').addEventListener('click',closeModal);
+
+  function renderAddGrid(){ addGrid.innerHTML=''; addictionsList.forEach(name=>{ const b=document.createElement('button'); b.textContent=name; b.title=name; if(formState.selected===name) b.classList.add('selected'); b.addEventListener('click',()=>{ formState.selected=name; [...addGrid.children].forEach(x=>x.classList.remove('selected')); b.classList.add('selected'); }); addGrid.appendChild(b); }); }
+
+  function goStep(n){ formState.step=n; document.querySelectorAll('.step').forEach(el=>el.classList.toggle('active', Number(el.dataset.step)===n));
+    document.getElementById('formStep1').style.display = n===1? 'block' : 'none';
+    document.getElementById('formStep2').style.display = n===2? 'block' : 'none';
+    document.getElementById('formStep3').style.display = n===3? 'block' : 'none';
+    document.getElementById('formStep4').style.display = n===4? 'block' : 'none';
+  }
+
+  document.getElementById('nextStep').addEventListener('click',()=>{
+    if(formState.step===1){ if(!formState.selected){ alert('Wybierz nałóg z siatki.'); return; } goStep(2); }
+    else if(formState.step===2){ const d = document.getElementById('quitDate').value; if(!d){ alert('Wybierz datę.'); return;} formState.quitDate=d; goStep(3); }
+    else if(formState.step===3){ const f = document.getElementById('frequency').value; formState.frequency=f||''; goStep(4); }
+    else if(formState.step===4){ const c = Number(document.getElementById('cost').value||0); formState.cost=c;
+      const selDate = document.getElementById('quitDate').value;
+      let finalDate;
+      const today = new Date().toISOString().slice(0,10);
+      if(selDate===today){ finalDate = new Date().toISOString(); }
+      else { finalDate = new Date(selDate + 'T00:00:00').toISOString(); }
+
+      if(formState.editId){ const it = data.find(d=>d.id===formState.editId); if(it){ it.name=formState.selected; it.quitDate=finalDate; it.frequency=formState.frequency; it.cost=formState.cost; save(); renderAll(); closeModal(); } }
+      else { const obj = {id:uid(), name:formState.selected, quitDate:finalDate, frequency:formState.frequency, cost:formState.cost, points:0, ownerId:curUser.id}; data.push(obj); save(); renderAll(); closeModal(); }
+    }
+  });
+
+  document.getElementById('prevStep').addEventListener('click',()=>{ if(formState.step>1) goStep(formState.step-1); else closeModal(); });
+
+
+// obsluga przysiskow usun i edytuj
+  listEl.addEventListener('click', (e) => {
+      const btn = e.target.closest('button');
+      if (!btn) return;
+
+      const action = btn.dataset.action;
+      const id = btn.dataset.id;
+
+      // akcja edycji (bez zmian)
+      if (action === 'edit') {
+          const it = data.find(d => d.id === id);
+          if (!it) return;
+          openModal(id);
+          formState.selected = it.name;
+          document.getElementById('quitDate').value = new Date(it.quitDate).toISOString().slice(0, 10);
+          document.getElementById('frequency').value = it.frequency;
+          document.getElementById('cost').value = it.cost;
+          formState.editId = id;
+          goStep(1);
+      }
+
+      // akcja usuwania
+      if (action === 'del') {
+          
+          data = data.filter(d => d.id !== id);
+          save();
+          renderAll();
+      }
+  });
+  
+  renderAll(); updateTimers();
+
+  
+// --- OSIĄGNIĘCIA (LOGIKA) ---
+
+  // Definicja dostępnych odznak
+  const achievementsDef = [
+    { id: '1day', title: 'Pierwszy Krok', desc: 'Wytrzymaj 24h bez nałogu', icon: '🌱', reqDays: 1 },
+    { id: '3days', title: 'Rozbieg', desc: '3 dni czystości', icon: '🏃', reqDays: 3 },
+    { id: '7days', title: 'Tydzień Wolności', desc: 'Pełny tydzień bez nałogu', icon: '🔥', reqDays: 7 },
+    { id: '30days', title: 'Miesiąc Mocy', desc: '30 dni wytrwałości', icon: '🛡️', reqDays: 30 },
+    { id: '100days', title: 'Spartanin', desc: '100 dni czystości', icon: '⚔️', reqDays: 100 },
+    { id: 'saved50', title: 'Skarbonka', desc: 'Zaoszczędź 50 PLN', icon: '🐷', reqMoney: 50 },
+    { id: 'saved500', title: 'Inwestor', desc: 'Zaoszczędź 500 PLN', icon: '💰', reqMoney: 500 },
+    { id: 'saved2000', title: 'Magnat', desc: 'Zaoszczędź 2000 PLN', icon: '💎', reqMoney: 2000 },
+    { id: 'tracker', title: 'Świadomość', desc: 'Śledź przynajmniej 3 nałogi', icon: '📊', reqCount: 3 }
+  ];
+
+  const achView = document.getElementById('achievementsView');
+  const achList = document.getElementById('achievementsList');
+
+ 
+  document.getElementById('openAchievBtn').addEventListener('click', () => {
+      mainView.style.display = 'none';
+      forumView.style.display = 'none';
+      achView.style.display = 'block';
+      renderAchievements();
+  });
+
+  document.getElementById('backHomeFromAch').addEventListener('click', () => {
+      achView.style.display = 'none';
+      mainView.style.display = 'block';
+  });
+
+  function renderAchievements() {
+      achList.innerHTML = '';
+      
+      
+      let maxDays = 0;
+      let totalSaved = 0;
+      const trackedCount = data.length;
+
+      data.forEach(item => {
+          const days = Math.floor((Date.now() - new Date(item.quitDate).getTime()) / 86400000);
+          if (days > maxDays) maxDays = days;
+
+          const weekly = Number(item.cost) || 0;
+          const saved = (weekly / 7) * days;
+          totalSaved += saved;
+      });
+
+      let unlockedCount = 0;
+
+      achievementsDef.forEach(ach => {
+          let isUnlocked = false;
+
+        
+          if (ach.reqDays && maxDays >= ach.reqDays) isUnlocked = true;
+          if (ach.reqMoney && totalSaved >= ach.reqMoney) isUnlocked = true;
+          if (ach.reqCount && trackedCount >= ach.reqCount) isUnlocked = true;
+
+          if (isUnlocked) unlockedCount++;
+
+        
+          const el = document.createElement('div');
+          el.className = `ach-card ${isUnlocked ? 'unlocked' : 'locked'}`;
+          el.innerHTML = `
+              <div class="ach-icon">${ach.icon}</div>
+              <h4 class="ach-title">${ach.title}</h4>
+              <p class="ach-desc">${ach.desc}</p>
+              <div class="ach-status">${isUnlocked ? 'ZDOBYTE' : 'ZABLOKOWANE'}</div>
+          `;
+          achList.appendChild(el);
+      });
+
+     
+      const percent = Math.round((unlockedCount / achievementsDef.length) * 100);
+      document.getElementById('achievProgressText').textContent = `Zdobyte odznaki: ${unlockedCount} / ${achievementsDef.length}`;
+      document.getElementById('achievProgressBar').style.width = percent + '%';
+  }
+ 
+  function animateComment(el){
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(10px)';
+    requestAnimationFrame(()=>{
+      el.style.transition = 'opacity 0.4s, transform 0.4s';
+      el.style.opacity = '1';
+      el.style.transform = 'translateY(0)';
+    });
+  }
+
+  </script>
+
+  <div class="dymek-czatu" onclick="toggleCzat()">
+  <svg viewBox="0 0 512 512">
+  <path d="M256 32C132.3 32 32 125.1 32 240c0 49.5 21.4 94.6 56.9 130.3C76 429.7 38.5 457.4 38.1 457.7c-6.8 4.9-3.3 15.7 5.1 15.7 46.5 0 82.3-19.3 107.1-38.4 32.8 17.1 70.3 26.9 110.7 26.9 123.7 0 224-93.1 224-208S379.7 32 256 32z"/>
+  </svg>
+  </div>
+
+
+  <div class="kontener" id="chatBox">
+  <div class="pasek-nawigacji">
+  <a>Czat</a>
+  <div class="zamknij" onclick="toggleCzat()">
+  <div class="linia one"></div>
+  <div class="linia two"></div>
+  </div>
+  </div>
+
+
+  <div class="obszar-wiadomosci">
+  </div>
+
+
+  <div class="obszar-wysylania">
+  <div class="miejsce-inputu">
+  <input placeholder="Wpisz wiadomość..." class="input-wysylania" type="text">
+  <div class="wyslij">
+  <svg class="ikona-wyslij" viewBox="0 0 512 512">
+  <path fill="#6B6C7B" d="M481.508,210.336L68.414,38.926c-17.403-7.222-37.064-4.045-51.309,8.287C2.86,59.547-3.098,78.551,1.558,96.808 L38.327,241h180.026c8.284,0,15.001,6.716,15.001,15.001c0,8.284-6.716,15.001-15.001,15.001H38.327L1.558,415.193 c-4.656,18.258,1.301,37.262,15.547,49.595c14.274,12.357,33.937,15.495,51.31,8.287l413.094-171.409 C500.317,293.862,512,276.364,512,256.001C512,235.638,500.317,218.139,481.508,210.336z"></path>
+  </svg>
+  </div>
+  </div>
+  </div>
+  </div>
+
+
+ <script type="module">
+          // AI GEMINI 3 (bardzo ważne !!!!!!!!!)
+  
+  import { GoogleGenerativeAI } from "https://esm.run/@google/generative-ai";
+
+  
+ // KLUCZ API DO AI
+  const API_KEY = "AIzaSyBa_12wyVN-07P14ybMa_PwhZ00Jtooo7I"; 
+  
+  
+  const genAI = new GoogleGenerativeAI(API_KEY);
+  const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+
+  
+  window.toggleCzat = function() {
+      const box = document.getElementById("chatBox");
+      box.style.display = box.style.display === "flex" ? "none" : "flex";
+  }
+ 
+  window.addEventListener('DOMContentLoaded', () => {
+      const msgArea = document.querySelector('.obszar-wiadomosci');
+      
+      const welcomeDiv = document.createElement('div');
+      welcomeDiv.className = 'wiadomosc bot';
+      // wiadomosc powitalna
+      welcomeDiv.innerHTML = `<strong>Asystent AI:</strong> Cześć! Jak mogę Ci dzisiaj towarzyszyć na Twojej Drodze do Wolności?`;
+      
+      msgArea.appendChild(welcomeDiv);
+  });
+
+
+  document.querySelector('.wyslij').addEventListener('click', wyslijMessage);
+  document.querySelector('.input-wysylania').addEventListener('keypress', function(e){ 
+      if(e.key==='Enter'){ wyslijMessage(); }
+  });
+
+ 
+  async function wyslijMessage(){
+      const input = document.querySelector('.input-wysylania');
+      const text = input.value.trim();
+      if(!text) return;
+
+      const msgArea = document.querySelector('.obszar-wiadomosci');
+      
+      
+      const userDiv = document.createElement('div');
+      userDiv.className = 'wiadomosc uzytkownik';
+      userDiv.innerHTML = `<strong>Ty:</strong> ${text}`;
+      msgArea.appendChild(userDiv);
+      
+     
+      input.value = '';
+      msgArea.scrollTop = msgArea.scrollHeight;
+
+      
+      const botDiv = document.createElement('div');
+      botDiv.className = 'wiadomosc bot';
+      botDiv.innerHTML = `<strong>Asystent AI:</strong> Piszę...`;
+      msgArea.appendChild(botDiv);
+      msgArea.scrollTop = msgArea.scrollHeight;
+      
+      // Pierwsze zapytanie do ai logiczne
+      const systemInstruction = `Jesteś życzliwym, prywatnym asystentem AI w aplikacji do śledzenia nałogów o nazwie "Twoja Droga do Wolności". 
+      Twoim celem jest wspieranie, motywowanie i udzielanie krótkich porad. 
+      Użytkownik właśnie napisał: "${text}". Odpowiedz krótko i pomocnie i wspierajaco.`;
+
+      try {
+          // Wysylanie zapytania do gemini
+          const result = await model.generateContent(systemInstruction);
+          const response = await result.response;
+          const aiResponseText = response.text();
+          
+          
+          botDiv.innerHTML = `<strong>Gemini:</strong> ${aiResponseText.replace(/\n/g, '<br>')}`;
+          
+      } catch (error) {
+          console.error('Błąd Gemini:', error);
+          botDiv.innerHTML = `<strong>Gemini:</strong> Wystąpił błąd połączenia. Sprawdź klucz API w kodzie lub konsolę przeglądarki.`;
+      }
+      
+      msgArea.scrollTop = msgArea.scrollHeight;
+  }
+</script>
+
+
+  </body>
+  </html>
